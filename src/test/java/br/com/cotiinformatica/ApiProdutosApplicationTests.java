@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 
+import br.com.cotiinformatica.dtos.AuthPostRequestDTO;
+import br.com.cotiinformatica.dtos.AuthResponseDTO;
 import br.com.cotiinformatica.dtos.MovimentacoesPostRequestDTO;
 import br.com.cotiinformatica.dtos.ProdutosPostRequestDTO;
 import br.com.cotiinformatica.dtos.ProdutosPutRequestDTO;
@@ -38,6 +40,27 @@ class ApiProdutosApplicationTests {
 
 	// atributo para guardar o produto cadastrado no teste
 	private static Produto produto;
+
+	// atributo para guardar o token gerado na autenticação
+	private static String accessToken;
+
+	@Test
+	@Order(1)
+	public void testAuthPost() throws Exception {
+
+		AuthPostRequestDTO dto = new AuthPostRequestDTO();
+		dto.setEmail("geovani@email.com");
+		dto.setSenha("@Admin123");
+
+		MvcResult result = mockMvc
+				.perform(post("/api/auth").contentType("application/json").content(mapper.writeValueAsString(dto)))
+				.andExpect(status().isOk()).andReturn();
+
+		String responseBody = result.getResponse().getContentAsString();
+		AuthResponseDTO response = mapper.readValue(responseBody, AuthResponseDTO.class);
+
+		accessToken = response.getAccessToken();
+	}
 
 	@Test
 	@Order(1)
@@ -112,7 +135,7 @@ class ApiProdutosApplicationTests {
 
 		MovimentacoesPostRequestDTO dto = new MovimentacoesPostRequestDTO();
 		dto.setIdProduto(produto.getIdProduto());
-		dto.setDataMovimentacao("2024-07-25");
+		dto.setDataMovimentacao("2024-07-30");
 		dto.setObservacoes("Movimentação teste");
 		dto.setQuantidade(10);
 		dto.setTipo(1);
@@ -129,7 +152,7 @@ class ApiProdutosApplicationTests {
 	@Order(6)
 	public void testMovimentacoesGetAll() throws Exception {
 
-		mockMvc.perform(get("/api/movimentacoes/2023-06-01/2023-06-30"))
+		mockMvc.perform(get("/api/movimentacoes/2024-07-01/2024-08-01"))
 				// endpoint
 				.andExpect(status().isOk());
 	}

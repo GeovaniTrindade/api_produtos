@@ -102,25 +102,32 @@ public class ProdutosController {
 
 		try {
 
-			// consultar o produto no banco de dados através do id
+			// consultando o produto no banco
+			// de dados através do ID
 			Optional<Produto> produto = produtoRepository.findById(idProduto);
 
 			// verificando se o produto não foi encontrado
 			if (produto.isEmpty()) {
-				response.setStatus(HttpStatus.BAD_REQUEST); // HTTP 400
-				response.setMensagem("Produto não encontrado, por favor verifique o ID informado!!!");
-
+				response.setStatus(HttpStatus.BAD_REQUEST); // HTTP 400 BAD REQUEST
+				response.setMensagem("Produto não encontrado, verifique o ID informado.");
 			} else {
-				// excluindo o produto
-				produtoRepository.delete(produto.get());
 
-				response.setStatus(HttpStatus.OK); // HTTP 200
-				response.setMensagem("Produto excluído com sucesso!");
-				response.setProduto(produto.get());
+				// verificar se o produto possui movimentações
+				if (produtoRepository.countByMovimentacao(idProduto) > 0) {
+					response.setStatus(HttpStatus.BAD_REQUEST); // HTTP 400 BAD REQUEST
+					response.setMensagem(
+							"Nâo é possível realizar a exclusão, pois o produto possui movimentações vinculadas.");
+				} else {
+					// excluindo o produto
+					produtoRepository.delete(produto.get());
+
+					response.setStatus(HttpStatus.OK); // HTTP 200 OK
+					response.setMensagem("Produto excluído com sucesso.");
+					response.setProduto(produto.get());
+				}
 			}
-
 		} catch (Exception e) {
-			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR); // HTTP 500
 			response.setMensagem(e.getMessage());
 		}
 
