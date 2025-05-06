@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 
+import br.com.cotiinformatica.dtos.AuthPostRequestDTO;
+import br.com.cotiinformatica.dtos.AuthResponseDTO;
 import br.com.cotiinformatica.dtos.MovimentacoesPostRequestDTO;
 import br.com.cotiinformatica.dtos.ProdutosPostRequestDTO;
 import br.com.cotiinformatica.dtos.ProdutosPutRequestDTO;
@@ -30,17 +32,45 @@ import br.com.cotiinformatica.entities.Produto;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ApiProdutosApplicationTests {
 
+
+
 	@Autowired // executar as requisições para a API
 	private MockMvc mockMvc;
+
 
 	@Autowired // serializar e deserializar os dados enviados para API
 	private ObjectMapper mapper;
 
+
 	// atributo para guardar o produto cadastrado no teste
 	private static Produto produto;
+	
+	//atributo para guardar o token gerado na autenticação
+	private static String accessToken;
 
+	
 	@Test
 	@Order(1)
+	public void testAuthPost() throws Exception{
+		
+		AuthPostRequestDTO dto = new AuthPostRequestDTO();
+		dto.setEmail("geovani@email.com");
+		dto.setSenha("@Admin123");
+		
+		MvcResult result = mockMvc.perform(post("/api/auth")
+				.contentType("application/json")
+				.content(mapper.writeValueAsString(dto)))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		String responseBody = result.getResponse().getContentAsString();
+		AuthResponseDTO response = mapper.readValue(responseBody, AuthResponseDTO.class);		
+		accessToken = response.getAccessToken();
+	}
+
+
+	@Test
+	@Order(2)
 	public void testProdutosPost() throws Exception {
 
 		Faker faker = new Faker();
@@ -67,7 +97,7 @@ class ApiProdutosApplicationTests {
 	}
 
 	@Test
-	@Order(2)
+	@Order(3)
 	public void testProdutosPut() throws Exception {
 
 		Faker faker = new Faker();
@@ -86,7 +116,7 @@ class ApiProdutosApplicationTests {
 	}
 
 	@Test
-	@Order(3)
+	@Order(4)
 	public void testProdutosGetAll() throws Exception {
 
 		mockMvc.perform(get("/api/produtos")) // endpoint
@@ -94,7 +124,7 @@ class ApiProdutosApplicationTests {
 	}
 
 	@Test
-	@Order(4)
+	@Order(5)
 	public void testProdutosGetById() throws Exception {
 
 		mockMvc.perform(get("/api/produtos/" + produto.getIdProduto())) // endpoint
@@ -102,7 +132,7 @@ class ApiProdutosApplicationTests {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
 	public void testMovimentacoesPost() throws Exception {
 
 		MovimentacoesPostRequestDTO dto = new MovimentacoesPostRequestDTO();
@@ -119,7 +149,7 @@ class ApiProdutosApplicationTests {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	public void testMovimentacoesGetAll() throws Exception {
 
 		mockMvc.perform(get("/api/movimentacoes/2023-06-01/2023-06-30"))// endpoint
@@ -127,7 +157,7 @@ class ApiProdutosApplicationTests {
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	public void testProdutosDelete() throws Exception {
 
 		testProdutosPost(); // criando um novo produto
