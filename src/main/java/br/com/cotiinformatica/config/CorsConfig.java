@@ -2,19 +2,34 @@ package br.com.cotiinformatica.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@EnableWebMvc
+// @EnableWebMvc
 public class CorsConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-
-		registry.addMapping("/**") // qualquer domínio
-				.allowedOrigins("*") // qualquer domínio
-				.allowedMethods("POST", "PUT", "DELETE", "GET") // métodos
-				.allowedHeaders("*"); // parametros de cabeçalho
+		
+		/* OK
+		 *
+		 * registry.addMapping("/**") .allowedOrigins("http://localhost:4200")
+		 * .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+		 * .allowedHeaders("*") .allowCredentials(true);
+		 *  
+		 */
+		
+		
+		// OK
+		  registry.addMapping("/api/auth") .allowedOrigins("*") .allowedMethods("POST")
+		  .allowedHeaders("*");
+		  
+		  registry.addMapping("/api/produtos") .allowedOrigins("*")
+		  .allowedMethods("POST", "PUT", "DELETE", "GET") .allowedHeaders("*");
+		  
+		  registry.addMapping("/api/movimentacoes") .allowedOrigins("*")
+		  .allowedMethods("POST", "PUT", "DELETE", "GET") .allowedHeaders("*");
+		 
 	}
+
 }

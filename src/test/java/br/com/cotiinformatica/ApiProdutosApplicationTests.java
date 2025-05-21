@@ -82,6 +82,7 @@ class ApiProdutosApplicationTests {
 		dto.setQuantidade(faker.number().randomDigit());
 
 		MvcResult result = mockMvc.perform(post("/api/produtos") // endpoint
+				.header("Authorization", "Bearer " + accessToken) //autenticação
 				.contentType("application/json")// formato dos dados
 				.content(mapper.writeValueAsString(dto))) // enviando os dados
 				.andExpect(status().isCreated()) // resultado esperado pelo teste
@@ -110,6 +111,7 @@ class ApiProdutosApplicationTests {
 		dto.setQuantidade(faker.number().randomDigit());
 
 		mockMvc.perform(put("/api/produtos") // endpoint
+				.header("Authorization", "Bearer " + accessToken) //autenticação
 				.contentType("application/json") // formato dos dados
 				.content(mapper.writeValueAsString(dto))) // enviando os dados
 				.andExpect(status().isOk());
@@ -119,7 +121,8 @@ class ApiProdutosApplicationTests {
 	@Order(4)
 	public void testProdutosGetAll() throws Exception {
 
-		mockMvc.perform(get("/api/produtos")) // endpoint
+		mockMvc.perform(get("/api/produtos") // endpoint
+				.header("Authorization", "Bearer " + accessToken)) //autenticação
 				.andExpect(status().isOk());
 	}
 
@@ -127,7 +130,8 @@ class ApiProdutosApplicationTests {
 	@Order(5)
 	public void testProdutosGetById() throws Exception {
 
-		mockMvc.perform(get("/api/produtos/" + produto.getIdProduto())) // endpoint
+		mockMvc.perform(get("/api/produtos/" + produto.getIdProduto()) // endpoint
+				.header("Authorization", "Bearer " + accessToken)) //autenticação) 
 				.andExpect(status().isOk());
 	}
 
@@ -143,6 +147,7 @@ class ApiProdutosApplicationTests {
 		dto.setTipo(1);
 
 		mockMvc.perform(post("/api/movimentacoes") // endpoint
+				.header("Authorization", "Bearer " + accessToken) //autenticação)
 				.contentType("application/json") // formato dos dados
 				.content(mapper.writeValueAsString(dto)))// enviando os dados
 				.andExpect(status().isCreated());
@@ -162,7 +167,8 @@ class ApiProdutosApplicationTests {
 
 		testProdutosPost(); // criando um novo produto
 
-		mockMvc.perform(delete("/api/produtos/" + produto.getIdProduto())) // endpoint
+		mockMvc.perform(delete("/api/produtos/" + produto.getIdProduto()) // endpoint
+				.header("Authorization", "Bearer " + accessToken)) //autenticação))
 				.andExpect(status().isOk());
 	}
 }

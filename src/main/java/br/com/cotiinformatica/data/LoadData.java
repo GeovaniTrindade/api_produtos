@@ -25,3 +25,5 @@ public class LoadData implements ApplicationRunner {
 		usuarioRepository.save(new Usuario(2, "Ana Luiza", "analuiza@email.com", md5Service.encrypt("@Teste123")));
 	}
 }
+
+// 56miin
